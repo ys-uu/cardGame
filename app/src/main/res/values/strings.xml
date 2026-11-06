@@ -1,0 +1,47 @@
+<resources>
+    <string name="label_student_id">学号：%s</string>
+    <string name="label_email">邮件地址：%s</string>
+    <string name="label_hobby">爱好：%s</string>
+    <string name="title_game">翻牌游戏</string>
+    <string name="btn_reset_game">重置游戏</string>
+    <string name="btn_exit">退出</string>
+    <string name="hint_student_id">学号</string>
+    <string name="hint_email">电子邮件地址</string>
+    <string name="gender_male">男</string>
+    <string name="gender_female">女</string>
+    <string name="hobby_travel">旅游</string>
+    <string name="hobby_read">阅读</string>
+    <string name="hobby_game">游戏</string>
+    <string name="hobby_shop">购物</string>
+    <string name="avatar">头像</string>
+
+    <string name="app_name">CardGame_杨松2024110540</string>
+
+
+    <!-- MainActivity 主页面 -->
+    <string name="tv_name_label">姓名：%s</string>
+    <string name="tv_gender_label">性别：%s</string>
+    <string name="tv_phone_label">电话：%s</string>
+    <string name="tv_highscore_label">历史最高分：%d</string>
+    <string name="btn_edit_info">修改个人信息</string>
+    <string name="btn_start_game">开始游戏</string>
+
+    <!-- GameActivity 游戏页面 -->
+    <string name="score_text">得分：%d</string>
+    <string name="flip_count_text">翻牌次数：%d</string>
+    <string name="btn_restart">重新开始</string>
+    <string name="toast_new_highscore">恭喜通关！新纪录：%d 分</string>
+    <string name="toast_win_score">恭喜通关！得分：%d</string>
+
+    <!-- EditInfoActivity 修改信息页 -->
+    <string name="title_edit_info">修改个人信息</string>
+    <string name="hint_name">姓名</string>
+    <string name="hint_gender">性别</string>
+    <string name="hint_phone">电话</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_confirm">保存</string>
+    <string name="toast_empty_input">信息不能为空</string>
+    <string name="toast_modify_success">修改成功</string>
+
+    <string name="card_back_mark">❓️</string>
+</resources>

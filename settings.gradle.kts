@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CardGame"
+rootProject.name = "exp_6_CardGame"
 include(":app")
  

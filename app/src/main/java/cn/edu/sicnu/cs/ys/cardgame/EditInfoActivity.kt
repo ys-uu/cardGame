@@ -16,7 +16,6 @@ class EditInfoActivity : AppCompatActivity() {
     private lateinit var btnConfirm: Button
     private lateinit var btnCancel: Button
 
-    // 新增控件
     private lateinit var etStudentId: TextInputEditText
     private lateinit var etEmail: TextInputEditText
     private lateinit var rgGender: RadioGroup
@@ -29,14 +28,12 @@ class EditInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_info)
 
-        // 原有控件绑定 完全保留
         etName = findViewById(R.id.et_name)
         etGender = findViewById(R.id.et_gender)
         etPhone = findViewById(R.id.et_phone)
         btnConfirm = findViewById(R.id.btn_confirm)
         btnCancel = findViewById(R.id.btn_cancel)
 
-        // 新增控件绑定
         etStudentId = findViewById(R.id.et_student_id)
         etEmail = findViewById(R.id.et_email)
         rgGender = findViewById(R.id.rg_gender)
@@ -45,18 +42,16 @@ class EditInfoActivity : AppCompatActivity() {
         cbGame = findViewById(R.id.cb_game)
         cbShop = findViewById(R.id.cb_shop)
 
-        // ========== 原有数据回显 完全保留 ==========
+        // 数据回显
         etName.setText(PlayerData.name)
         etGender.setText(PlayerData.gender)
         etPhone.setText(PlayerData.phone)
-
-        // ========== 新增：数据回显 ==========
         etStudentId.setText(PlayerData.studentId)
         etEmail.setText(PlayerData.email)
 
         val defaultGenderId = if (PlayerData.gender == "女") R.id.rb_female else R.id.rb_male
         rgGender.check(defaultGenderId)
-        etGender.setText(if(defaultGenderId == R.id.rb_male) "男" else "女")
+        etGender.setText(if (defaultGenderId == R.id.rb_male) "男" else "女")
 
         rgGender.setOnCheckedChangeListener { _, checkedId ->
             etGender.setText(if (checkedId == R.id.rb_male) "男" else "女")
@@ -69,12 +64,10 @@ class EditInfoActivity : AppCompatActivity() {
         cbGame.isChecked = hobbyList.contains("游戏")
         cbShop.isChecked = hobbyList.contains("购物")
 
-        // ========== 取消按钮 原有逻辑完全保留 ==========
         btnCancel.setOnClickListener {
             finish()
         }
 
-        // ========== 保存按钮 原有逻辑完全保留，仅追加新增字段保存 ==========
         btnConfirm.setOnClickListener {
             val name = etName.text.toString().trim()
             val gender = etGender.text.toString().trim()
@@ -85,22 +78,19 @@ class EditInfoActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 原有字段保存 完全保留
-            PlayerData.name = name
-            PlayerData.gender = gender
-            PlayerData.phone = phone
+            val studentId = etStudentId.text.toString().trim()
+            val email = etEmail.text.toString().trim()
 
-            // ========== 新增：保存扩展字段 ==========
-            PlayerData.studentId = etStudentId.text.toString().trim()
-            PlayerData.email = etEmail.text.toString().trim()
-
-            // 拼接爱好字符串
             val hobbySb = StringBuilder()
             if (cbTravel.isChecked) hobbySb.append("旅游、")
             if (cbRead.isChecked) hobbySb.append("阅读、")
             if (cbGame.isChecked) hobbySb.append("游戏、")
             if (cbShop.isChecked) hobbySb.append("购物、")
-            PlayerData.hobby = if (hobbySb.isNotEmpty()) hobbySb.dropLast(1).toString() else ""
+            val hobby = if (hobbySb.isNotEmpty()) hobbySb.dropLast(1).toString() else ""
+
+            // 更新内存并立即写入文件
+            PlayerData.updateProfile(name, gender, phone, studentId, email, hobby)
+            PlayerData.save(this)
 
             Toast.makeText(this, getString(R.string.toast_modify_success), Toast.LENGTH_SHORT).show()
             finish()

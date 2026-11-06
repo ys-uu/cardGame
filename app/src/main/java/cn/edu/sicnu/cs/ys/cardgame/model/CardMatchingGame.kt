@@ -1,29 +1,38 @@
 package cn.edu.sicnu.cs.ys.cardgame.model
 
-class CardMatchingGame(count: Int) {
+import java.io.Serializable
+
+class CardMatchingGame(
+    val gameCount: Int,
+    val matchMode: Int = 2
+) : Serializable {
+    companion object {
+        const val serialVersionUID = 1L
+        const val MISMATCH_PENALTY = 2
+        const val MATCH_BONUS = 4
+        const val COST_TO_CHOOSE = 1
+    }
+
     var score = 0
         private set
 
     var flipCount = 0
+        private set
 
     private val cards: MutableList<Card>
-    private val gameCount = count
-
-    val MISMATCH_PENALTY = 2
-    val MATCH_BONUS = 4
-    val COST_TO_CHOOSE = 1
 
     init {
-        require(count % 2 == 0) { "卡牌数量必须是偶数" }
+        require(gameCount % matchMode == 0) { "卡牌数量必须是 $matchMode 的倍数" }
         val deck = Deck()
         cards = mutableListOf()
 
         var added = 0
-        while (added < count / 2) {
+        while (added < gameCount / matchMode) {
             val card = deck.drawRandomCard()
             if (card != null) {
-                cards.add(card)
-                cards.add(card.copy())
+                repeat(matchMode) {
+                    cards.add(card.copy())
+                }
                 added++
             }
         }
@@ -43,7 +52,7 @@ class CardMatchingGame(count: Int) {
     fun chooseCardAtIndex(index: Int) {
         val card = cardAtIndex(index)
         if (card.isMatched) return
-        if (getFlippedCount() >= 2) return
+        if (getFlippedCount() >= matchMode) return
 
         if (card.isChosen) {
             card.isChosen = false
@@ -53,22 +62,45 @@ class CardMatchingGame(count: Int) {
         }
     }
 
+    /**
+     * 翻满 matchMode 张牌后统一结算
+     */
     fun finishCompare() {
         val openList = cards.filter { it.isChosen && !it.isMatched }
-        if (openList.size == 2) {
-            val c1 = openList[0]
-            val c2 = openList[1]
-            val matchScore = c1.match(arrayOf(c2))
+        if (openList.size == matchMode) {
+            val matchScore = calculateMatchScore(openList)
             if (matchScore > 0) {
                 score += matchScore * MATCH_BONUS
-                c1.isMatched = true
-                c2.isMatched = true
+                openList.forEach { it.isMatched = true }
             } else {
                 score -= MISMATCH_PENALTY
-                score -= COST_TO_CHOOSE
-                c1.isChosen = false
-                c2.isChosen = false
+                openList.forEach { it.isChosen = false }
             }
+        }
+    }
+
+    /**
+     * 2张模式：沿用原有 rank=4 / suit=1 规则
+     * 3张模式：3张同rank=16，2张同rank=4，3张同suit=2，2张同suit=1
+     */
+    private fun calculateMatchScore(openCards: List<Card>): Int {
+        if (matchMode == 2) {
+            val c1 = openCards[0]
+            val c2 = openCards[1]
+            return c1.match(arrayOf(c2))
+        }
+
+        val ranks = openCards.map { it.getRank() }
+        val suits = openCards.map { it.getSuit() }
+        val rankMax = ranks.groupingBy { it }.eachCount().values.maxOrNull() ?: 0
+        val suitMax = suits.groupingBy { it }.eachCount().values.maxOrNull() ?: 0
+
+        return when {
+            rankMax == 3 -> 16
+            rankMax == 2 -> 4
+            suitMax == 3 -> 2
+            suitMax == 2 -> 1
+            else -> 0
         }
     }
 
@@ -82,11 +114,12 @@ class CardMatchingGame(count: Int) {
         cards.clear()
         val deck = Deck()
         var added = 0
-        while (added < gameCount / 2) {
+        while (added < gameCount / matchMode) {
             val card = deck.drawRandomCard()
             if (card != null) {
-                cards.add(card)
-                cards.add(card.copy())
+                repeat(matchMode) {
+                    cards.add(card.copy())
+                }
                 added++
             }
         }
